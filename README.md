@@ -2,7 +2,7 @@
 
 **Stop downloading massive ZIP files.** PwnStore is a lightweight, CLI-based package manager for Pwnagotchi. It allows you to browse, install, and manage plugins surgically—downloading only the files you need.
 
-![Version](https://img.shields.io/badge/version-1.2-green) ![Python](https://img.shields.io/badge/python-3-blue) ![License](https://img.shields.io/badge/license-GPL3-red)
+![Version](https://img.shields.io/badge/version-1.3-green) ![Python](https://img.shields.io/badge/python-3-blue) ![License](https://img.shields.io/badge/license-GPL3-red)
 
 ## ✨ Features
 * **Lightweight Registry:** Queries a remote JSON manifest; doesn't bloat your device with git history.
@@ -71,6 +71,8 @@ Want to add a plugin to the store?
 
 ## ☕ Support the Development
 If this tool saved you time or saved your SD card from clutter, consider buying me a coffee!
+
+**[Buy me a coffee (wpa2)](https://buymeacoffee.com/wpa2)**
 
 <a href="https://buymeacoffee.com/wpa2">
   <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=wpa2&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" />
