@@ -9,7 +9,7 @@
             --bg-color: #121212;
             --card-bg: #1e1e1e;
             --text-main: #e0e0e0;
-            --text-muted: #777;
+            --text-muted: #666;
             --accent: #4caf50;
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             --font-mono: 'Courier New', Courier, monospace;
@@ -25,16 +25,33 @@
             padding: 40px 20px;
         }
 
-        /* Header */
+        /* Header Section */
         header { text-align: center; margin-bottom: 50px; }
-        h1 { font-weight: 800; margin: 0; letter-spacing: -1px; font-size: 2.5rem; color: #fff; }
-        .subtitle { color: var(--text-muted); font-size: 1rem; margin-top: 10px; }
+        
+        h1 { 
+            font-weight: 800; margin: 0; letter-spacing: -1px; font-size: 2.5rem; color: #fff; 
+            text-transform: uppercase;
+        }
+        
+        .subtitle { 
+            color: var(--text-muted); font-size: 1rem; margin-top: 5px; font-weight: 500; 
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        .credits {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #555;
+            font-family: var(--font-mono);
+        }
+        .credits a { color: var(--accent); text-decoration: none; opacity: 0.9; border-bottom: 1px dotted var(--accent); }
+        .credits a:hover { opacity: 1; border-style: solid; }
 
         /* Search */
         .search-container { max-width: 600px; margin: 0 auto 50px auto; }
         input#search {
             width: 100%;
-            padding: 18px 25px;
+            padding: 16px 25px;
             background: #1a1a1a;
             border: 1px solid #333;
             border-radius: 50px;
@@ -42,9 +59,8 @@
             font-size: 1rem;
             outline: none;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
-        input#search:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(76, 175, 80, 0.2); }
+        input#search:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(76, 175, 80, 0.1); }
 
         /* Grid */
         .grid {
@@ -65,7 +81,7 @@
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            height: 220px; /* Fixed height for uniformity */
+            height: 200px; /* Reduced height for compact look */
             overflow: hidden;
         }
 
@@ -78,42 +94,46 @@
         .card-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 8px;
+            align-items: center;
+            margin-bottom: 5px;
         }
 
         .card h2 { 
             margin: 0; font-size: 1.1rem; color: var(--accent); 
             font-family: var(--font-mono); font-weight: 600;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 75%;
         }
 
         .version-badge {
-            background: #2a2a2a; font-size: 0.7rem; padding: 3px 8px; 
-            border-radius: 6px; color: #888; font-family: var(--font-mono);
+            background: #2a2a2a; font-size: 0.7rem; padding: 2px 6px; 
+            border-radius: 4px; color: #666; font-family: var(--font-mono);
         }
 
         .author { 
-            font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; 
+            font-size: 0.8rem; color: #555; margin-bottom: 15px; 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         
+        /* STRICT DESCRIPTION CLAMPING */
         .desc { 
-            font-size: 0.9rem; color: #ccc; line-height: 1.5; 
-            overflow: hidden;
+            font-size: 0.9rem; color: #bbb; line-height: 1.5; 
+            /* Limit to exactly 3 lines */
             display: -webkit-box;
-            -webkit-line-clamp: 3; /* Limit to 3 lines */
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 4.5em; /* Enforce height based on line-height */
         }
 
-        /* The Hover Button Magic */
+        /* Hover Button Magic */
         .install-overlay {
             position: absolute;
             bottom: 0; left: 0; width: 100%;
             padding: 20px;
-            background: linear-gradient(to top, var(--card-bg) 10%, transparent);
+            background: linear-gradient(to top, var(--card-bg) 20%, transparent);
             transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             justify-content: center;
         }
@@ -129,35 +149,34 @@
             border-radius: 8px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
         }
 
-        /* Mobile: Always show button, but smaller */
+        /* Mobile Tweaks */
         @media (hover: none) {
-            .card { height: auto; padding-bottom: 70px; }
-            .install-overlay { transform: translateY(0); background: none; }
-            .desc { -webkit-line-clamp: 99; } /* Show full text on mobile */
+            .install-overlay { transform: translateY(0); background: none; position: relative; padding: 20px 0 0 0; }
+            .card { height: auto; }
         }
 
         /* Modal */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
             z-index: 1000; justify-content: center; align-items: center;
         }
         .modal {
-            background: #1a1a1a; padding: 40px; border-radius: 24px;
+            background: #1a1a1a; padding: 35px; border-radius: 20px;
             width: 90%; max-width: 480px; text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid #333;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6); border: 1px solid #333;
         }
         .cmd-box {
             background: #000; color: var(--accent); font-family: var(--font-mono);
-            padding: 20px; border-radius: 12px; margin: 25px 0;
-            word-break: break-all; border: 1px dashed #333; font-size: 0.95rem;
+            padding: 15px; border-radius: 8px; margin: 20px 0;
+            word-break: break-all; border: 1px dashed #333; font-size: 0.9rem;
         }
-        .modal-actions { display: flex; gap: 15px; }
-        .btn-copy { flex: 2; background: var(--text-main); color: #000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .btn-close { flex: 1; background: transparent; color: #666; border: 1px solid #333; padding: 14px; border-radius: 12px; cursor: pointer; }
+        .modal-actions { display: flex; gap: 10px; }
+        .btn-copy { flex: 2; background: var(--text-main); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-close { flex: 1; background: transparent; color: #666; border: 1px solid #333; padding: 12px; border-radius: 8px; cursor: pointer; }
 
     </style>
 </head>
@@ -166,6 +185,9 @@
     <header>
         <h1>PwnStore</h1>
         <div class="subtitle">Unofficial Plugin Registry</div>
+        <div class="credits">
+            Built by WPA2 &bull; <a href="https://buymeacoffee.com/wpa2" target="_blank">Buy me a coffee</a>
+        </div>
     </header>
 
     <div class="search-container">
@@ -181,7 +203,7 @@
             <p style="color:#888;">Run this command on your Pwnagotchi:</p>
             <div class="cmd-box" id="modal-cmd">...</div>
             <div class="modal-actions">
-                <button class="btn-copy" onclick="copyCmd()">Copy</button>
+                <button class="btn-copy" onclick="copyCmd()">Copy Command</button>
                 <button class="btn-close" onclick="closeModal()">Close</button>
             </div>
         </div>
@@ -195,7 +217,7 @@
             const grid = document.getElementById('plugin-grid');
             grid.innerHTML = "";
             list.forEach(p => {
-                // Clean up author name (remove email junk)
+                // Clean Author Name
                 let cleanAuthor = p.author.split('<')[0].split('@')[0]; 
                 if(cleanAuthor.length > 20) cleanAuthor = cleanAuthor.substring(0, 18) + "...";
 
@@ -223,7 +245,6 @@
 
         const modal = document.getElementById('modal');
         const modalCmd = document.getElementById('modal-cmd');
-
         function openModal(name) {
             document.getElementById('modal-title').innerText = name;
             modalCmd.innerText = `sudo pwnstore install ${name}`;
@@ -245,7 +266,7 @@
         function onCopy() {
             const btn = document.querySelector('.btn-copy');
             btn.innerText = "Copied!";
-            setTimeout(() => btn.innerText = "Copy", 2000);
+            setTimeout(() => btn.innerText = "Copy Command", 2000);
         }
         window.onclick = e => { if(e.target == modal) closeModal(); }
     </script>
