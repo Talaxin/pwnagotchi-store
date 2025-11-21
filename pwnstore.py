@@ -16,8 +16,8 @@ import shutil
 import re
 
 # --- CONFIGURATION ---
-# UPDATE THIS WITH YOUR GITHUB RAW URL BEFORE PUSHING
-REGISTRY_URL = "https://raw.githubusercontent.com/YOUR_GITHUB_USER/pwnagotchi-store/main/plugins.json"
+# UPDATE THIS WITH YOUR GITHUB RAW URL
+REGISTRY_URL = "http://gitea.local/wpa2/pwnagotchi-store/raw/branch/main/plugins.json"
 
 CUSTOM_PLUGIN_DIR = "/usr/local/share/pwnagotchi/custom-plugins/"
 CONFIG_FILE = "/etc/pwnagotchi/config.toml"
@@ -36,9 +36,19 @@ def banner():
     print(r" | |_) \ \ /\ / / '_ \ (___| |_ ___  _ __ ___  ")
     print(r" |  __/ \ V  V /| | | \___ \ __/ _ \| '__/ _ \ ")
     print(r" | |     \_/\_/ |_| |_|____/ || (_) | | |  __/ ")
-    print(r" |_|   v1.3 by WPA2     \_____/\__\___/|_|  \___| ")
+    print(r" |_|   v1.4 (Secure)    \_____/\__\___/|_|  \___| ")
     print(f"{RESET}")
     print(f"  Support the dev: {GREEN}https://buymeacoffee.com/wpa2{RESET}\n")
+
+def check_sudo():
+    if os.geteuid() != 0:
+        print(f"{RED}[!] Error: You must run this command with sudo.{RESET}")
+        sys.exit(1)
+
+def is_safe_name(name):
+    """Security: Prevents Path Traversal (e.g. ../../etc/passwd)"""
+    # Only allow alphanumeric, underscores, and dashes. No dots or slashes.
+    return re.match(r'^[a-zA-Z0-9_-]+$', name) is not None
 
 def get_installed_plugins():
     if not os.path.exists(CUSTOM_PLUGIN_DIR):
@@ -47,7 +57,7 @@ def get_installed_plugins():
 
 def fetch_registry():
     try:
-        r = requests.get(REGISTRY_URL, timeout=10)
+        r = requests.get(REGISTRY_URL, timeout=15)
         if r.status_code != 200:
             print(f"{RED}[!] Could not connect to store (Status: {r.status_code}){RESET}")
             sys.exit(1)
@@ -77,6 +87,10 @@ def list_plugins(args):
     print("-" * 85)
 
 def show_info(args):
+    if not is_safe_name(args.name):
+        print(f"{RED}[!] Invalid plugin name.{RESET}")
+        return
+
     target_name = args.name
     registry = fetch_registry()
     plugin_data = next((p for p in registry if p['name'] == target_name), None)
@@ -96,7 +110,6 @@ def show_info(args):
     print("")
 
 def scan_for_config_params(file_path):
-    """Scans for self.options['key'] OR self.options["key"] OR self.options.get('key')."""
     params = []
     try:
         with open(file_path, 'r', errors='ignore') as f:
@@ -107,13 +120,12 @@ def scan_for_config_params(file_path):
         pass
     return params
 
-def check_sudo():
-    if os.geteuid() != 0:
-        print(f"{RED}[!] Error: You must run this command with sudo.{RESET}")
-        sys.exit(1)
-
 def install_plugin(args):
     check_sudo()
+    if not is_safe_name(args.name):
+        print(f"{RED}[!] Security Error: Invalid characters in plugin name.{RESET}")
+        return
+
     target_name = args.name
     registry = fetch_registry()
     
@@ -125,22 +137,30 @@ def install_plugin(args):
 
     print(f"[*] Installing {CYAN}{target_name}{RESET} by {plugin_data['author']}...")
 
+    # Force the destination filename to be safe, ignoring whatever filename the server sends
     final_file_path = os.path.join(CUSTOM_PLUGIN_DIR, f"{target_name}.py")
 
     try:
         if plugin_data.get('origin_type') == 'zip':
             print(f"[*] Downloading repository archive...")
-            r = requests.get(plugin_data['download_url'])
+            r = requests.get(plugin_data['download_url'], timeout=30)
             z = zipfile.ZipFile(io.BytesIO(r.content))
             target_path = plugin_data['path_inside_zip']
+            
+            # Security Check: Ensure the zip path doesn't have '..'
+            if ".." in target_path or target_path.startswith("/"):
+                print(f"{RED}[!] Security Error: Malicious zip path detected.{RESET}")
+                return
+
             print(f"[*] Extracting {target_path}...")
             if not os.path.exists(CUSTOM_PLUGIN_DIR):
                 os.makedirs(CUSTOM_PLUGIN_DIR)
+            
             with z.open(target_path) as source, open(final_file_path, "wb") as dest:
                 shutil.copyfileobj(source, dest)
         else:
             print(f"[*] Downloading file...")
-            r = requests.get(plugin_data['download_url'])
+            r = requests.get(plugin_data['download_url'], timeout=30)
             if not os.path.exists(CUSTOM_PLUGIN_DIR):
                 os.makedirs(CUSTOM_PLUGIN_DIR)
             with open(final_file_path, "wb") as f:
@@ -161,6 +181,10 @@ def install_plugin(args):
 
 def uninstall_plugin(args):
     check_sudo()
+    if not is_safe_name(args.name):
+        print(f"{RED}[!] Security Error: Invalid characters in plugin name.{RESET}")
+        return
+
     target_name = args.name
     file_path = os.path.join(CUSTOM_PLUGIN_DIR, f"{target_name}.py")
     
@@ -192,8 +216,11 @@ def update_config(plugin_name, enable=True):
             else:
                 new_lines.append(line)
         
+        # Ensure we are appending to a new line even if the file ends abruptly
         if not found and enable:
-            new_lines.append(f"\n{config_key} = true\n")
+            if new_lines and not new_lines[-1].endswith('\n'):
+                new_lines[-1] += '\n'
+            new_lines.append(f"{config_key} = true\n")
 
         with open(CONFIG_FILE, "w") as f:
             f.writelines(new_lines)
