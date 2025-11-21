@@ -458,5 +458,115 @@
     "origin_type": "zip",
     "download_url": "https://github.com/wpa-2/Pwnagotchi-Plugins/archive/master.zip",
     "path_inside_zip": "Pwnagotchi-Plugins-main/wiglelocator.py"
+  },
+  {
+    "name": "wardriver",
+    "version": "2.3",
+    "description": "A wardriving plugin for pwnagotchi. Saves all networks seen and uploads data to WiGLE once internet is available",
+    "author": "CyberArtemio",
+    "category": "Display",
+    "origin_type": "zip",
+    "download_url": "https://github.com/cyberartemio/wardriver-pwnagotchi-plugin/archive/main.zip",
+    "path_inside_zip": "wardriver-pwnagotchi-plugin-main/wardriver.py"
+  },
+  {
+    "name": "adsbsniffer",
+    "version": "0.1.0",
+    "description": "A plugin that captures ADS-B data from aircraft using RTL-SDR and logs it.",
+    "author": "4li3nMaJ1k",
+    "category": "Attack",
+    "origin_type": "zip",
+    "download_url": "https://github.com/AlienMajik/pwnagotchi_plugins/archive/refs/heads/main.zip",
+    "path_inside_zip": "pwnagotchi_plugins-main/adsbsniffer.py"
+  },
+  {
+    "name": "age",
+    "version": "3.1.0",
+    "description": "An enhanced plugin with frequent titles, dynamic quotes, progress bars, random events, handshake streaks, personality evolution, and secret achievements. UI is optimized to avoid clutter.",
+    "author": "AlienMajik",
+    "category": "Display",
+    "origin_type": "zip",
+    "download_url": "https://github.com/AlienMajik/pwnagotchi_plugins/archive/refs/heads/main.zip",
+    "path_inside_zip": "pwnagotchi_plugins-main/age.py"
+  },
+  {
+    "name": "mad_hatter",
+    "version": "1.2.2",
+    "description": "Universal enhanced plugin for various UPS HATs: Battery indicator, voltage, auto-shutdown, polling, UI customization, error diagnostics, health monitoring, auto-detection, and improved charging detection with calibration.",
+    "author": "AlienMajik",
+    "category": "Hardware",
+    "origin_type": "zip",
+    "download_url": "https://github.com/AlienMajik/pwnagotchi_plugins/archive/refs/heads/main.zip",
+    "path_inside_zip": "pwnagotchi_plugins-main/mad_hatter.py"
+  },
+  {
+    "name": "neurolyzer",
+    "version": "1.6.0",
+    "description": "Advanced WIDS/WIPS evasion system with hardware-aware adaptive countermeasures",
+    "author": "AlienMajik",
+    "category": "Display",
+    "origin_type": "zip",
+    "download_url": "https://github.com/AlienMajik/pwnagotchi_plugins/archive/refs/heads/main.zip",
+    "path_inside_zip": "pwnagotchi_plugins-main/neurolyzer.py"
+  },
+  {
+    "name": "neurolyzerbeta",
+    "version": "1.6.0",
+    "description": "Advanced WIDS/WIPS evasion system with hardware-aware adaptive countermeasures",
+    "author": "AlienMajik",
+    "category": "Display",
+    "origin_type": "zip",
+    "download_url": "https://github.com/AlienMajik/pwnagotchi_plugins/archive/refs/heads/main.zip",
+    "path_inside_zip": "pwnagotchi_plugins-main/neurolyzerbeta.py"
+  },
+  {
+    "name": "probenpwn",
+    "version": "1.6.0",
+    "description": "Aggressively capture handshakes with two modes: Tactical (smart and efficient",
+    "author": "AlienMajik",
+    "category": "Attack",
+    "origin_type": "zip",
+    "download_url": "https://github.com/AlienMajik/pwnagotchi_plugins/archive/refs/heads/main.zip",
+    "path_inside_zip": "pwnagotchi_plugins-main/probenpwn.py"
+  },
+  {
+    "name": "skyhigh",
+    "version": "1.1.1",
+    "description": "Advanced aircraft/ADS-B data plugin with robust type-detection, embedded SVG icons, filtering, export, and caching.",
+    "author": "AlienMajik",
+    "category": "Display",
+    "origin_type": "zip",
+    "download_url": "https://github.com/AlienMajik/pwnagotchi_plugins/archive/refs/heads/main.zip",
+    "path_inside_zip": "pwnagotchi_plugins-main/skyhigh.py"
+  },
+  {
+    "name": "snoopr",
+    "version": "2.0.0",
+    "description": "A plugin for wardriving Wi-Fi and Bluetooth networks and detecting snoopers with enhanced functionality.",
+    "author": "AlienMajik",
+    "category": "Display",
+    "origin_type": "zip",
+    "download_url": "https://github.com/AlienMajik/pwnagotchi_plugins/archive/refs/heads/main.zip",
+    "path_inside_zip": "pwnagotchi_plugins-main/snoopr.py"
+  },
+  {
+    "name": "snooprbeta",
+    "version": "2.4.0",
+    "description": "Enhanced wardriving plugin with robust GPS/Bluetooth/Wi-Fi and SkyHigh integration, including aircraft tracking, Wi-Fi client detection, paths for snoopers, triangulation for precise locations, and exports.",
+    "author": "AlienMajik",
+    "category": "Display",
+    "origin_type": "zip",
+    "download_url": "https://github.com/AlienMajik/pwnagotchi_plugins/archive/refs/heads/main.zip",
+    "path_inside_zip": "pwnagotchi_plugins-main/snooprbeta.py"
+  },
+  {
+    "name": "theylive",
+    "version": "1.2.0",
+    "description": "Sets up and installs gpsd to report lat/long on the screen and setup bettercap pcap gps logging. Added support for PwnDroid for GPS sharing via Android app over Bluetooth tether. Enhancements: Streamed GPSD data, retries, more fields, efficiency improvements.",
+    "author": "discord@rai68",
+    "category": "Display",
+    "origin_type": "zip",
+    "download_url": "https://github.com/AlienMajik/pwnagotchi_plugins/archive/refs/heads/main.zip",
+    "path_inside_zip": "pwnagotchi_plugins-main/theylive.py"
   }
 ]
