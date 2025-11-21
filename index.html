@@ -6,183 +6,232 @@
     <title>PwnStore Registry</title>
     <style>
         :root {
-            --bg-color: #000000;
-            --text-color: #33ff00;
-            --card-bg: #0a0a0a;
-            --border-color: #33ff00;
-            --font-main: 'Courier New', Courier, monospace;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --accent: #4caf50; /* Softer Green */
+            --accent-hover: #66bb6a;
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
         }
+
+        * { box-sizing: border-box; }
 
         body {
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-main);
             font-family: var(--font-main);
             margin: 0;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            line-height: 1.6;
         }
 
-        /* Header & ASCII Art */
+        /* Header */
         header {
             text-align: center;
-            margin-bottom: 40px;
-            white-space: pre;
-            font-weight: bold;
-            line-height: 1.2;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
         }
 
-        h1 { margin: 10px 0; text-transform: uppercase; letter-spacing: 2px; }
+        h1 { 
+            font-weight: 700; 
+            margin: 0; 
+            letter-spacing: -1px;
+            background: linear-gradient(45deg, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         
+        .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 5px; }
+
         /* Search Bar */
         .search-container {
             width: 100%;
             max-width: 600px;
-            margin-bottom: 30px;
+            margin: 0 auto 30px auto;
+            position: relative;
         }
 
         input#search {
             width: 100%;
-            padding: 15px;
-            background: #000;
-            border: 2px solid var(--border-color);
-            color: var(--text-color);
-            font-family: var(--font-main);
-            font-size: 1.2rem;
+            padding: 16px 20px;
+            background: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 1rem;
             outline: none;
+            transition: border-color 0.2s;
         }
-        input#search::placeholder { color: #005500; }
-        input#search:focus { box-shadow: 0 0 10px var(--text-color); }
+        input#search:focus { border-color: var(--accent); }
 
-        /* Plugin Grid */
+        /* Grid Layout */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
-            width: 100%;
             max-width: 1200px;
+            margin: 0 auto;
         }
 
+        /* Cards */
         .card {
-            border: 1px solid var(--border-color);
             background: var(--card-bg);
+            border-radius: 12px;
             padding: 20px;
-            position: relative;
-            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #333;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 4px 4px 0px var(--text-color);
+            transform: translateY(-2px);
+            border-color: #444;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
-        .card h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 1px dashed #005500; padding-bottom: 10px; }
-        .meta { font-size: 0.8rem; color: #88cc88; margin-bottom: 15px; }
-        .desc { font-size: 0.9rem; line-height: 1.4; height: 60px; overflow: hidden; margin-bottom: 20px; }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .card h2 { 
+            margin: 0; 
+            font-size: 1.2rem; 
+            color: var(--accent);
+            font-family: var(--font-mono); 
+        }
+
+        .version-badge {
+            background: #333;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        .author { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; }
+        
+        .desc { 
+            font-size: 0.95rem; 
+            color: var(--text-main); 
+            margin-bottom: 20px; 
+            flex-grow: 1; /* Pushes button to bottom */
+        }
 
         button.install-btn {
             width: 100%;
-            padding: 10px;
-            background: var(--text-color);
-            color: #000;
+            padding: 12px;
+            background: #333;
+            color: #fff;
             border: none;
-            font-family: var(--font-main);
-            font-weight: bold;
+            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
-            text-transform: uppercase;
+            transition: background 0.2s;
         }
-        button.install-btn:hover { background: #fff; }
+        button.install-btn:hover { background: var(--accent); color: #000; }
 
         /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            justify-content: center;
-            align-items: center;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
             z-index: 1000;
-        }
-        .modal {
-            background: #000;
-            border: 2px solid var(--text-color);
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 0 20px var(--text-color);
-        }
-        .cmd-box {
-            background: #111;
-            border: 1px dashed var(--text-color);
-            padding: 15px;
-            margin: 20px 0;
-            word-break: break-all;
-            font-size: 0.9rem;
-            text-align: left;
-        }
-        .close-btn {
-            background: transparent;
-            color: var(--text-color);
-            border: 1px solid var(--text-color);
-            padding: 5px 20px;
-            cursor: pointer;
-            margin-top: 10px;
+            justify-content: center;
+            align-items: flex-end; /* Bottom sheet on mobile */
         }
 
-        footer {
-            margin-top: 50px;
+        .modal {
+            background: #252525;
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 20px 20px 0 0; /* Rounded top corners */
             text-align: center;
-            font-size: 0.8rem;
-            color: #444;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease-out;
         }
-        footer a { color: #666; text-decoration: none; }
-        footer a:hover { color: var(--text-color); }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .cmd-box {
+            background: #000;
+            color: var(--accent);
+            font-family: var(--font-mono);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            word-break: break-all;
+            text-align: left;
+            font-size: 0.9rem;
+            border: 1px solid #333;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-copy { flex: 2; background: var(--accent); color: #000; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-close { flex: 1; background: transparent; color: var(--text-muted); border: 1px solid #444; padding: 15px; border-radius: 8px; cursor: pointer; }
+
+        /* Desktop Tweaks for Modal */
+        @media(min-width: 600px) {
+            .modal-overlay { align-items: center; }
+            .modal { border-radius: 16px; }
+        }
+
+        footer { text-align: center; margin-top: 50px; font-size: 0.9rem; color: #666; padding-bottom: 20px; }
+        footer a { color: #888; text-decoration: none; border-bottom: 1px dotted #666; }
 
     </style>
 </head>
 <body>
 
     <header>
-<pre>
-  ____                _____ _                  
- |  _ \ _      ___ __/ ____| |                 
- | |_) \ \ /\ / / '_ \ (___| |_ ___  _ __ ___  
- |  __/ \ V  V /| | | \___ \ __/ _ \| '__/ _ \ 
- | |     \_/\_/ |_| |_|____/ || (_) | | |  __/ 
- |_|   v1.0             \_____/\__\___/|_|  \___| 
-</pre>
-        <h1>Unofficial App Store</h1>
+        <h1>PwnStore</h1>
+        <div class="subtitle">Unofficial Plugin Registry</div>
     </header>
 
     <div class="search-container">
-        <input type="text" id="search" placeholder="> Search plugins..." onkeyup="filterPlugins()">
+        <input type="text" id="search" placeholder="Search plugins..." onkeyup="filterPlugins()">
     </div>
 
     <div class="grid" id="plugin-grid">
-        <div style="text-align:center; width:100%;">Loading registry...</div>
+        <div style="text-align:center; width:100%; color: #666;">Loading registry...</div>
     </div>
 
     <footer>
-        <p>Built by WPA2</p>
-        <a href="https://buymeacoffee.com/wpa2" target="_blank">☕ Buy me a coffee</a>
+        <p>Built by WPA2 &bull; <a href="https://buymeacoffee.com/wpa2" target="_blank">Buy me a coffee</a></p>
     </footer>
 
     <div class="modal-overlay" id="modal">
         <div class="modal">
-            <h2 id="modal-title">Install Plugin</h2>
-            <p>Run this command on your Pwnagotchi:</p>
+            <h3 id="modal-title" style="margin-top:0; color:#fff;">Install Plugin</h3>
+            <p style="color:#aaa; font-size:0.9rem;">Run this on your Pwnagotchi:</p>
             <div class="cmd-box" id="modal-cmd">sudo pwnstore install ...</div>
-            <button class="install-btn" onclick="copyCmd()">Copy Command</button>
-            <button class="close-btn" onclick="closeModal()">Close</button>
+            <div class="modal-actions">
+                <button class="btn-copy" onclick="copyCmd()">COPY COMMAND</button>
+                <button class="btn-close" onclick="closeModal()">CLOSE</button>
+            </div>
         </div>
     </div>
 
     <script>
         let plugins = [];
 
-        // 1. Fetch the JSON data
+        // 1. Fetch JSON
         fetch('plugins.json')
             .then(response => response.json())
             .then(data => {
@@ -190,17 +239,16 @@
                 renderPlugins(plugins);
             })
             .catch(err => {
-                document.getElementById('plugin-grid').innerHTML = "Error loading plugins.json. Is the file generated?";
-                console.error(err);
+                document.getElementById('plugin-grid').innerHTML = "Error loading plugins.json";
             });
 
-        // 2. Render the grid
+        // 2. Render
         function renderPlugins(list) {
             const grid = document.getElementById('plugin-grid');
             grid.innerHTML = "";
 
             if(list.length === 0) {
-                grid.innerHTML = "<p>No plugins found.</p>";
+                grid.innerHTML = "<p style='text-align:center; color:#666;'>No plugins found.</p>";
                 return;
             }
 
@@ -208,16 +256,19 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
-                    <h2>${p.name}</h2>
-                    <div class="meta">v${p.version} • by ${p.author}</div>
+                    <div class="card-header">
+                        <h2>${p.name}</h2>
+                        <span class="version-badge">v${p.version}</span>
+                    </div>
+                    <div class="author">by ${p.author}</div>
                     <div class="desc">${p.description}</div>
-                    <button class="install-btn" onclick="openModal('${p.name}')">INSTALL</button>
+                    <button class="install-btn" onclick="openModal('${p.name}')">Install</button>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        // 3. Filter Logic
+        // 3. Filter
         function filterPlugins() {
             const term = document.getElementById('search').value.toLowerCase();
             const filtered = plugins.filter(p => 
@@ -227,12 +278,12 @@
             renderPlugins(filtered);
         }
 
-        // 4. Modal Logic
+        // 4. Modal & Copy Logic
         const modal = document.getElementById('modal');
         const modalCmd = document.getElementById('modal-cmd');
 
         function openModal(name) {
-            document.getElementById('modal-title').innerText = "Install " + name;
+            document.getElementById('modal-title').innerText = name;
             modalCmd.innerText = `sudo pwnstore install ${name}`;
             modal.style.display = 'flex';
         }
@@ -241,19 +292,45 @@
             modal.style.display = 'none';
         }
 
+        // ROBUST COPY FUNCTION (Works on non-secure HTTP)
         function copyCmd() {
-            navigator.clipboard.writeText(modalCmd.innerText);
-            const btn = document.querySelector('.modal .install-btn');
-            const originalText = btn.innerText;
-            btn.innerText = "COPIED!";
-            setTimeout(() => btn.innerText = originalText, 2000);
+            const text = modalCmd.innerText;
+            
+            // Try Modern API first
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(onCopySuccess);
+            } else {
+                // Fallback for HTTP/Localhost
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    onCopySuccess();
+                } catch (err) {
+                    console.error('Fallback copy failed', err);
+                }
+                document.body.removeChild(textArea);
+            }
         }
 
-        // Close modal on outside click
+        function onCopySuccess() {
+            const btn = document.querySelector('.btn-copy');
+            const originalText = btn.innerText;
+            btn.innerText = "COPIED!";
+            btn.style.background = "#fff";
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.background = "var(--accent)";
+            }, 2000);
+        }
+
         window.onclick = function(event) {
-            if (event.target == modal) {
-                closeModal();
-            }
+            if (event.target == modal) closeModal();
         }
     </script>
 </body>
