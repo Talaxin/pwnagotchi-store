@@ -36,7 +36,7 @@ def banner():
     print(r" | |_) \ \ /\ / / '_ \ (___| |_ ___  _ __ ___  ")
     print(r" |  __/ \ V  V /| | | \___ \ __/ _ \| '__/ _ \ ")
     print(r" | |     \_/\_/ |_| |_|____/ || (_) | | |  __/ ")
-    print(r" |_|   v2.2 (Smart Scan)\_____/\__\___/|_|  \___| ")
+    print(r" |_|   v1.1 (Smart Scan)\_____/\__\___/|_|  \___| ")
     print(f"{RESET}")
     print(f"  Support the dev: {GREEN}https://buymeacoffee.com/wpa2{RESET}\n")
 
