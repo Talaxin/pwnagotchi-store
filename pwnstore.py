@@ -185,19 +185,30 @@ def show_info(args):
     print(plugin_data['download_url'])
     print("")
 
-def scan_for_config_params(file_path):
-    """Scans for self.options['key'] to give user hints."""
+def scan_for_config_params(file_path, plugin_name):
+    """Scans for usage of self.options OR config.get to find requirements."""
     params = []
+    # Words to ignore if found in .get() calls
+    ignore_list = ['main', 'plugins', 'enabled', 'name', 'whitelist', 'screen', 'display', plugin_name]
+    
     try:
         with open(file_path, 'r', errors='ignore') as f:
             content = f.read()
-            # Regex checks for self.options['key'] or self.options.get('key')
-            # Added flexible spacing \s*
-            matches = re.findall(r"self\.options(?:\[|\.get\()\s*['\"]([^'\"]+)['\"]", content)
-            params = list(set(matches)) 
+            
+            # 1. Standard: self.options['key']
+            matches_standard = re.findall(r"self\.options(?:\[|\.get\()\s*['\"]([^'\"]+)['\"]", content)
+            
+            # 2. Loose: .get('key') - finds manual config parsing like in wiglelocator
+            matches_loose = re.findall(r"\.get\(\s*['\"]([^'\"]+)['\"]", content)
+            
+            all_matches = set(matches_standard + matches_loose)
+            
+            for m in all_matches:
+                if m not in ignore_list and len(m) > 2:
+                    params.append(m)
     except:
         pass
-    return params
+    return sorted(params)
 
 def update_self(args):
     check_sudo()
@@ -290,8 +301,8 @@ def install_plugin(args):
         print(f"{GREEN}[+] Successfully installed to {final_file_path}{RESET}")
         update_config(target_name, enable=True)
         
-        # Scan for config options
-        params = scan_for_config_params(final_file_path)
+        # Scan for config options with the new smarter function
+        params = scan_for_config_params(final_file_path, target_name)
         if params:
             print(f"\n{YELLOW}[!] CONFIGURATION REQUIRED:{RESET}")
             print(f"This plugin references the following options. Add them to config.toml:")
@@ -315,7 +326,7 @@ def uninstall_plugin(args):
     except Exception as e: print(f"{RED}[!] Error: {e}{RESET}")
 
 def update_config(plugin_name, enable=True):
-    """Updates config.toml with correct spacing."""
+    """Updates config.toml with a blank line for new entries."""
     try:
         with open(CONFIG_FILE, "r") as f: lines = f.readlines()
         new_lines = []
@@ -325,12 +336,11 @@ def update_config(plugin_name, enable=True):
         for line in lines:
             if config_key in line:
                 found = True
-                # Existing key? No extra space needed
                 new_lines.append(f"{config_key} = {'true' if enable else 'false'}\n")
             else:
                 new_lines.append(line)
         
-        # New key? Add a newline before it for cleanliness
+        # Add blank line before new entry
         if not found and enable:
             if new_lines and not new_lines[-1].endswith('\n'): new_lines[-1] += '\n'
             new_lines.append(f"\n{config_key} = true\n")
