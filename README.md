@@ -22,8 +22,6 @@ SSH into your Pwnagotchi and run this single command to install the store:
 sudo wget -O /usr/local/bin/pwnstore [https://raw.githubusercontent.com/YOUR_GITHUB_USER/pwnagotchi-store/main/pwnstore.py](https://raw.githubusercontent.com/YOUR_GITHUB_USER/pwnagotchi-store/main/pwnstore.py) && sudo chmod +x /usr/local/bin/pwnstore
 ```
 
-*(Note: Replace `YOUR_GITHUB_USER` with your actual username. Verify installation by running `pwnstore list`.)*
-
 ---
 
 ## 📖 CLI Usage
