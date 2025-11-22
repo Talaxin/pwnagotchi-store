@@ -17,7 +17,7 @@ import re
 
 # --- CONFIGURATION ---
 # [IMPORTANT] ALWAYS KEEP THIS SET TO THE PUBLIC GITHUB URL
-DEFAULT_REGISTRY = "https://raw.githubusercontent.com/wpa-2/pwnagotchi-store/main/plugins.json"
+DEFAULT_REGISTRY = "http://192.168.1.4:3001/wpa2/pwnagotchi-store/raw/branch/main/plugins.json"
 
 CUSTOM_PLUGIN_DIR = "/usr/local/share/pwnagotchi/custom-plugins/"
 CONFIG_FILE = "/etc/pwnagotchi/config.toml"
@@ -36,7 +36,7 @@ def banner():
     print(r" | |_) \ \ /\ / / '_ \ (___| |_ ___  _ __ ___  ")
     print(r" |  __/ \ V  V /| | | \___ \ __/ _ \| '__/ _ \ ")
     print(r" | |     \_/\_/ |_| |_|____/ || (_) | | |  __/ ")
-    print(r" |_|   v2.1 (Config Fix)\_____/\__\___/|_|  \___| ")
+    print(r" |_|   v2.1 (Deep Scan) \_____/\__\___/|_|  \___| ")
     print(f"{RESET}")
     print(f"  Support the dev: {GREEN}https://buymeacoffee.com/wpa2{RESET}\n")
 
@@ -46,11 +46,9 @@ def check_sudo():
         sys.exit(1)
 
 def is_safe_name(name):
-    """Security: Prevents Path Traversal (e.g. ../../etc/passwd)"""
     return re.match(r'^[a-zA-Z0-9_-]+$', name) is not None
 
 def get_local_version(file_path):
-    """Reads the __version__ string from a local file."""
     try:
         with open(file_path, 'r', errors='ignore') as f:
             content = f.read()
@@ -67,7 +65,6 @@ def get_installed_plugins():
     return [f.replace(".py", "") for f in os.listdir(CUSTOM_PLUGIN_DIR) if f.endswith(".py")]
 
 def get_registry_url():
-    """Checks config.toml for a developer override, otherwise uses public GitHub."""
     try:
         if os.path.exists(CONFIG_FILE):
             with open(CONFIG_FILE, 'r') as f:
@@ -186,25 +183,25 @@ def show_info(args):
     print("")
 
 def scan_for_config_params(file_path, plugin_name):
-    """Scans for usage of self.options OR config.get to find requirements."""
+    """Deep scans for .get() and ['key'] usage to find requirements."""
     params = []
-    # Words to ignore if found in .get() calls
-    ignore_list = ['main', 'plugins', 'enabled', 'name', 'whitelist', 'screen', 'display', plugin_name]
+    # Stop words to ignore
+    ignore = ['main', 'plugins', 'enabled', 'name', 'whitelist', 'screen', 'display', 'none', 'false', 'true', plugin_name]
     
     try:
         with open(file_path, 'r', errors='ignore') as f:
             content = f.read()
             
             # 1. Standard: self.options['key']
-            matches_standard = re.findall(r"self\.options(?:\[|\.get\()\s*['\"]([^'\"]+)['\"]", content)
+            matches_std = re.findall(r"self\.options\s*\[\s*['\"]([^'\"]+)['\"]\s*\]", content)
             
-            # 2. Loose: .get('key') - finds manual config parsing like in wiglelocator
-            matches_loose = re.findall(r"\.get\(\s*['\"]([^'\"]+)['\"]", content)
+            # 2. Loose: .get('key') - catches wiglelocator style
+            matches_get = re.findall(r"\.get\(\s*['\"]([^'\"]+)['\"]", content)
             
-            all_matches = set(matches_standard + matches_loose)
+            all_matches = set(matches_std + matches_get)
             
             for m in all_matches:
-                if m not in ignore_list and len(m) > 2:
+                if m not in ignore and len(m) > 2:
                     params.append(m)
     except:
         pass
@@ -301,7 +298,7 @@ def install_plugin(args):
         print(f"{GREEN}[+] Successfully installed to {final_file_path}{RESET}")
         update_config(target_name, enable=True)
         
-        # Scan for config options with the new smarter function
+        # Deep scan for config options
         params = scan_for_config_params(final_file_path, target_name)
         if params:
             print(f"\n{YELLOW}[!] CONFIGURATION REQUIRED:{RESET}")
@@ -340,7 +337,6 @@ def update_config(plugin_name, enable=True):
             else:
                 new_lines.append(line)
         
-        # Add blank line before new entry
         if not found and enable:
             if new_lines and not new_lines[-1].endswith('\n'): new_lines[-1] += '\n'
             new_lines.append(f"\n{config_key} = true\n")
