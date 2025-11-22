@@ -16,7 +16,6 @@ import shutil
 import re
 
 # --- CONFIGURATION ---
-# [IMPORTANT] UPDATE THIS URL BEFORE PUSHING
 REGISTRY_URL = "https://raw.githubusercontent.com/wpa-2/pwnagotchi-store/main/plugins.json"
 
 CUSTOM_PLUGIN_DIR = "/usr/local/share/pwnagotchi/custom-plugins/"
