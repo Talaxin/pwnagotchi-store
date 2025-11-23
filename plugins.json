@@ -80,6 +80,16 @@
     "path_inside_zip": "pwny-main/bt-logger.py"
   },
   {
+    "name": "cfp",
+    "version": "1.0.0",
+    "description": "A plugin that adds custom phrases. Displays random phrases based on configurable probabilities. Perfect for giving your Pwnagotchi more personality!",
+    "author": "p.xelbrei",
+    "category": "Attack",
+    "origin_type": "zip",
+    "download_url": "https://github.com/pxelbrei/cfp/archive/master.zip",
+    "path_inside_zip": "cfp-main/cfp.py"
+  },
+  {
     "name": "clock",
     "version": "1.0.2",
     "description": "Clock/Calendar for pwnagotchi",
