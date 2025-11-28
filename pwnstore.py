@@ -16,7 +16,6 @@ import shutil
 import re
 
 # --- CONFIGURATION ---
-# [IMPORTANT] ALWAYS KEEP THIS SET TO THE PUBLIC GITHUB URL
 DEFAULT_REGISTRY = "https://raw.githubusercontent.com/wpa-2/pwnagotchi-store/main/plugins.json"
 
 CUSTOM_PLUGIN_DIR = "/usr/local/share/pwnagotchi/custom-plugins/"
@@ -36,7 +35,7 @@ def banner():
     print(r" | |_) \ \ /\ / / '_ \ (___| |_ ___  _ __ ___  ")
     print(r" |  __/ \ V  V /| | | \___ \ __/ _ \| '__/ _ \ ")
     print(r" | |     \_/\_/ |_| |_|____/ || (_) | | |  __/ ")
-    print(r" |_|   v1.1 (Smart Scan)\_____/\__\___/|_|  \___| ")
+    print(r" |_|   v2.5 (Clean Auth) \_____/\__\___/|_|  \___| ")
     print(f"{RESET}")
     print(f"  Support the dev: {GREEN}https://buymeacoffee.com/wpa2{RESET}\n")
 
@@ -46,9 +45,11 @@ def check_sudo():
         sys.exit(1)
 
 def is_safe_name(name):
+    """Security: Prevents Path Traversal (e.g. ../../etc/passwd)"""
     return re.match(r'^[a-zA-Z0-9_-]+$', name) is not None
 
 def get_local_version(file_path):
+    """Reads the __version__ string from a local file."""
     try:
         with open(file_path, 'r', errors='ignore') as f:
             content = f.read()
@@ -65,6 +66,7 @@ def get_installed_plugins():
     return [f.replace(".py", "") for f in os.listdir(CUSTOM_PLUGIN_DIR) if f.endswith(".py")]
 
 def get_registry_url():
+    """Checks config.toml for a developer override, otherwise uses public GitHub."""
     try:
         if os.path.exists(CONFIG_FILE):
             with open(CONFIG_FILE, 'r') as f:
@@ -94,23 +96,51 @@ def fetch_registry():
         print(f"{RED}[!] Connection failed: {e}{RESET}")
         sys.exit(1)
 
+def clean_author_name(author):
+    """Removes emails, URLs, and numeric IDs for clean display."""
+    if not author or author == 'Unknown':
+        return 'Unknown'
+    
+    # 1. Remove email addresses (e.g., xxx@gmail.com or <xxx@gmail.com>)
+    cleaned = re.sub(r'\s*<?[\w\.-]+@[\w\.-]+>?', '', author).strip()
+    
+    # 2. Remove URL artifacts (e.g., https://github.com/...)
+    cleaned = re.sub(r'https?://[^\s]+', '', cleaned).strip()
+    
+    # 3. Remove GitHub numeric/plus IDs (e.g., 129890632+)
+    cleaned = re.sub(r'^[0-9]+\+\s*', '', cleaned).strip()
+    
+    # 4. Remove leading symbols/handles that are part of the author name
+    cleaned = re.sub(r'^@', '', cleaned).strip()
+    
+    # If cleanup leaves nothing, revert to a clean version of the original.
+    if not cleaned or cleaned.lower() == 'by':
+        return author.split(',')[0].strip() or 'Unknown'
+
+    # Clean up commas/extra spaces leftover from deletions
+    return cleaned.replace(',', '').strip()
+
 def list_plugins(args):
     print(f"[*] Fetching plugin list...")
     registry = fetch_registry()
     installed = get_installed_plugins()
     
-    print(f"{'NAME':<24} | {'VERSION':<10} | {'TYPE':<12} | {'STATUS'}")
-    print("-" * 75)
+    # NEW WIDER TABLE HEADERS
+    print(f"{'NAME':<25} | {'VERSION':<10} | {'AUTHOR':<20} | {'STATUS'}")
+    print("-" * 80)
     
     for p in registry:
         name = p['name']
-        if len(name) > 23: name = name[:20] + "..."
+        if len(name) > 24: name = name[:21] + "..."
             
         status = f"{GREEN}INSTALLED{RESET}" if name in installed else "Available"
-        category = p.get('category', 'General')
         
-        print(f"{name:<24} | {p['version']:<10} | {category:<12} | {status}")
-    print("-" * 75)
+        # APPLY CLEANUP LOGIC
+        author = clean_author_name(p.get('author', 'Unknown'))
+        if len(author) > 19: author = author[:17] + "..."
+        
+        print(f"{name:<25} | {p['version']:<10} | {author:<20} | {status}")
+    print("-" * 80)
 
 def list_sources(args):
     print(f"[*] Analyzing repository sources...")
@@ -149,18 +179,22 @@ def search_plugins(args):
         print(f"{YELLOW}[!] No plugins found matching '{args.query}'{RESET}")
         return
 
-    print(f"{'NAME':<24} | {'VERSION':<10} | {'TYPE':<12} | {'STATUS'}")
-    print("-" * 75)
+    # NEW WIDER TABLE HEADERS
+    print(f"{'NAME':<25} | {'VERSION':<10} | {'AUTHOR':<20} | {'STATUS'}")
+    print("-" * 80)
     
     for p in results:
         name = p['name']
-        if len(name) > 23: name = name[:20] + "..."
-        
+        if len(name) > 24: name = name[:21] + "..."
+            
         status = f"{GREEN}INSTALLED{RESET}" if name in installed else "Available"
-        category = p.get('category', 'General')
         
-        print(f"{name:<24} | {p['version']:<10} | {category:<12} | {status}")
-    print("-" * 75)
+        # APPLY CLEANUP LOGIC
+        author = clean_author_name(p.get('author', 'Unknown'))
+        if len(author) > 19: author = author[:17] + "..."
+        
+        print(f"{name:<25} | {p['version']:<10} | {author:<20} | {status}")
+    print("-" * 80)
 
 def show_info(args):
     if not is_safe_name(args.name): return
@@ -185,26 +219,20 @@ def show_info(args):
 def scan_for_config_params(file_path, plugin_name):
     """Smartly scans for config usage while ignoring API/Data calls."""
     params = []
-    # System words to ignore
     ignore = ['main', 'plugins', 'enabled', 'name', 'whitelist', 'screen', 'display', 'none', 'false', 'true', plugin_name]
     
     try:
         with open(file_path, 'r', errors='ignore') as f:
             for line in f:
-                # Safety Filter: Ignore lines that are clearly API or Data calls
                 if any(bad in line for bad in ['requests.get', 'result.get', 'data.get', 'resp.get', 'json.get']):
                     continue
                 
-                # 1. Standard: self.options['key']
                 matches = re.findall(r"self\.options\s*\[\s*['\"]([^'\"]+)['\"]\s*\]", line)
                 
-                # 2. Loose: .get('key') (Only if line contains config/options keywords)
-                # This helps catch: config.get('key') or self.options.get('key')
                 if 'config' in line or 'options' in line or 'kwargs' in line:
                     matches += re.findall(r"\.get\(\s*['\"]([^'\"]+)['\"]", line)
                 
                 for m in matches:
-                    # Filter out URLs or paths
                     if 'http' in m or '/' in m: continue
                     
                     if m not in ignore and len(m) > 2:
@@ -228,7 +256,8 @@ def update_self(args):
         if "#!/usr/bin/env python3" not in r.text: return
 
         current_file = os.path.realpath(__file__)
-        with open(current_file, 'w') as f: f.write(r.text)
+        with open(current_file, 'w') as f:
+            f.write(r.text)
         os.chmod(current_file, 0o755)
         print(f"{GREEN}[+] PwnStore updated successfully! Run 'pwnstore list' to verify version.{RESET}")
     except Exception as e: print(f"{RED}[!] Update failed: {e}{RESET}")
@@ -329,6 +358,7 @@ def uninstall_plugin(args):
     except Exception as e: print(f"{RED}[!] Error: {e}{RESET}")
 
 def update_config(plugin_name, enable=True):
+    """Updates config.toml with a blank line for new entries."""
     try:
         with open(CONFIG_FILE, "r") as f: lines = f.readlines()
         new_lines = []
