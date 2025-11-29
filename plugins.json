@@ -21,8 +21,8 @@
   },
   {
     "name": "auto_backup",
-    "version": "1.2.1",
-    "description": "Backs up files when internet is available. Creates compressed, safe backups.",
+    "version": "2.0",
+    "description": "Backs up files and cleans up old backups to save space.",
     "author": "WPA2",
     "category": "System",
     "origin_type": "zip",
@@ -121,8 +121,8 @@
   },
   {
     "name": "discord",
-    "version": "2.3.0",
-    "description": "Sends Pwnagotchi handshakes and session summaries to Discord, with location data from WiGLE. Persists a local cache of WiGLE lookups.",
+    "version": "2.6.0",
+    "description": "Sends Pwnagotchi handshakes (w/ pcap) and reports Last Session stats on boot/mode switch.",
     "author": "WPA2",
     "category": "Social",
     "origin_type": "zip",
@@ -161,7 +161,7 @@
   },
   {
     "name": "enable_assocV2",
-    "version": "1.0.2.1",
+    "version": "1.0.2.2",
     "description": "Enable and disable ASSOC on the fly. Enabled when plugin loads, disabled when plugin unloads. No Touch screen here",
     "author": "evilsocket@gmail.com",
     "category": "Attack",
@@ -181,7 +181,7 @@
   },
   {
     "name": "enable_deauthV2",
-    "version": "1.0.1.1",
+    "version": "1.0.1.2",
     "description": "Enable and disable DEAUTH on the fly. Enabled when plugin loads, disabled when plugin unloads. No Touch screen here",
     "author": "Sniffleupagus",
     "category": "Attack",
@@ -313,7 +313,7 @@
     "name": "memtempV2",
     "version": "0.0.1",
     "description": "A plugin that will display memory, cpu usage, load, and temperature, can show as many as you want",
-    "author": "https://github.com/xenDE",
+    "author": "xenDE",
     "category": "Display",
     "origin_type": "zip",
     "download_url": "https://github.com/unitMeasure/pwn-plugins/archive/main.zip",
@@ -511,7 +511,7 @@
   },
   {
     "name": "sorted_pwn",
-    "version": "0.0.2.1",
+    "version": "0.0.2.2",
     "description": "List cracked passwords from any potfile found in the handshakes directory",
     "author": "37124354+dbukovac@users.noreply.github.com",
     "category": "Attack",
@@ -538,6 +538,26 @@
     "origin_type": "zip",
     "download_url": "https://github.com/Sniffleupagus/pwnagotchi_plugins/archive/master.zip",
     "path_inside_zip": "pwnagotchi_plugins-main/speak_to_me.py"
+  },
+  {
+    "name": "tailscale",
+    "version": "1.0.0",
+    "description": "A configurable plugin to connect to a Tailscale network and sync handshakes.",
+    "author": "WPA2",
+    "category": "Display",
+    "origin_type": "zip",
+    "download_url": "https://github.com/wpa-2/Pwnagotchi-Plugins/archive/master.zip",
+    "path_inside_zip": "Pwnagotchi-Plugins-main/tailscale.py"
+  },
+  {
+    "name": "Tele_Pi",
+    "version": "1.3.1",
+    "description": "No description provided.",
+    "author": "WPA2",
+    "category": "Display",
+    "origin_type": "zip",
+    "download_url": "https://github.com/wpa-2/Pwnagotchi-Plugins/archive/master.zip",
+    "path_inside_zip": "Pwnagotchi-Plugins-main/Tele_Pi.py"
   },
   {
     "name": "theylive",
@@ -638,5 +658,15 @@
     "origin_type": "zip",
     "download_url": "https://github.com/wpa-2/Pwnagotchi-Plugins/archive/master.zip",
     "path_inside_zip": "Pwnagotchi-Plugins-main/wiglelocator.py"
+  },
+  {
+    "name": "wireguard",
+    "version": "1.9",
+    "description": "VPN Sync: Full backup on first run, then incremental only.",
+    "author": "WPA2",
+    "category": "Display",
+    "origin_type": "zip",
+    "download_url": "https://github.com/wpa-2/Pwnagotchi-Plugins/archive/master.zip",
+    "path_inside_zip": "Pwnagotchi-Plugins-main/wireguard.py"
   }
 ]
