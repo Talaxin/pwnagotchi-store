@@ -651,7 +651,7 @@
   },
   {
     "name": "wiglelocator",
-    "version": "2.0",
+    "version": "2.0.1",
     "description": "Async WiGLE locator with caching, offline queueing, and Web UI map",
     "author": "WPA2",
     "category": "Display",
